@@ -12,10 +12,11 @@ class OrderForm
     {
         return $schema
             ->components([
-                TextInput::make('email')
-                    ->label('Email address')
-                    ->email()
-                    ->required(),
+            Select::make('email')
+                ->relationship('user', 'email')
+                ->searchable()
+                ->preload()
+                ->required(),
                 TextInput::make('total_amount')
                     ->required()
                     ->numeric(),

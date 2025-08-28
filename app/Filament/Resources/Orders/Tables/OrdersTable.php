@@ -14,7 +14,7 @@ class OrdersTable
     {
         return $table
             ->columns([
-                TextColumn::make('email')
+                TextColumn::make('user.email')
                     ->sortable(),
                 TextColumn::make('total_amount')
                     ->numeric()
