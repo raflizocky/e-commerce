@@ -32,7 +32,7 @@ class ProductForm
                 TextInput::make('stock_qty')
                     ->required()
                     ->numeric(),
-                FileUpload::make('image_url')
+                FileUpload::make('image')
                     ->image(),
             ]);
     }

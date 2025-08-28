@@ -29,7 +29,8 @@ class ProductsTable
                 TextColumn::make('stock_qty')
                     ->numeric()
                     ->sortable(),
-                ImageColumn::make('image_url'),
+                ImageColumn::make('image')
+                    ->width(60),
                 TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
