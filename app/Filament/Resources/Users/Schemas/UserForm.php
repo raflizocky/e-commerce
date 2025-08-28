@@ -1,27 +1,29 @@
 <?php
 
-namespace App\Filament\Resources\Orders\Schemas;
+namespace App\Filament\Resources\Users\Schemas;
 
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Schema;
 
-class OrderForm
+class UserForm
 {
     public static function configure(Schema $schema): Schema
     {
         return $schema
             ->components([
+                TextInput::make('name')
+                    ->required(),
                 TextInput::make('email')
                     ->label('Email address')
                     ->email()
                     ->required(),
-                TextInput::make('total_amount')
-                    ->required()
-                    ->numeric(),
-                Select::make('status')
-                    ->options(['pending' => 'Pending', 'paid' => 'Paid', 'shipped' => 'Shipped', 'delivered' => 'Delivered'])
-                    ->default('pending')
+                TextInput::make('password')
+                    ->password()
+                    ->required(),
+                Select::make('role')
+                    ->options(['user' => 'User', 'admin' => 'Admin'])
+                    ->default('user')
                     ->required(),
             ]);
     }
