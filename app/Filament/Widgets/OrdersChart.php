@@ -3,31 +3,37 @@
 namespace App\Filament\Widgets;
 
 use Leandrocfe\FilamentApexCharts\Widgets\ApexChartWidget;
+use App\Models\Order;
+use Carbon\Carbon;
 
 class OrdersChart extends ApexChartWidget
 {
-    /**
-     * Chart Id
-     *
-     * @var string
-     */
     protected static ?string $chartId = 'ordersChart';
-
-    /**
-     * Widget Title
-     *
-     * @var string|null
-     */
     protected static ?string $heading = 'Orders';
+    protected int | string | array $columnSpan = 'full';
 
-    /**
-     * Chart options (series, labels, types, size, animations...)
-     * https://apexcharts.com/docs/options
-     *
-     * @return array
-     */
+    protected static ?int $sort = 2;
+
     protected function getOptions(): array
     {
+        $startDate = request('start_date', now()->startOfMonth());
+        $endDate = request('end_date', now()->endOfMonth());
+
+        $orders = Order::whereBetween('created_at', [$startDate, $endDate])
+            ->selectRaw('DATE(created_at) as date, COUNT(*) as count')
+            ->groupBy('date')
+            ->orderBy('date')
+            ->pluck('count', 'date');
+
+        $period = Carbon::parse($startDate)->daysUntil($endDate);
+        $data = [];
+        $categories = [];
+
+        foreach ($period as $date) {
+            $categories[] = $date->format('M j');
+            $data[] = $orders->get($date->format('Y-m-d'), 0);
+        }
+
         return [
             'chart' => [
                 'type' => 'line',
@@ -35,12 +41,12 @@ class OrdersChart extends ApexChartWidget
             ],
             'series' => [
                 [
-                    'name' => 'OrdersChart',
-                    'data' => [2, 4, 6, 10, 14, 7, 2, 9, 10, 15, 13, 18],
+                    'name' => 'Orders',
+                    'data' => $data,
                 ],
             ],
             'xaxis' => [
-                'categories' => ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+                'categories' => $categories,
                 'labels' => [
                     'style' => [
                         'fontFamily' => 'inherit',
