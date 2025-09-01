@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User;
+use App\Models\Customer;
 use App\Models\Category;
 use App\Models\Product;
 use App\Models\Order;
@@ -24,11 +25,27 @@ class DatabaseSeeder extends Seeder
             'role' => 'admin',
         ]);
 
-        $user = User::create([
+        $superadmin = User::create([
             'name' => 'Superadmin',
             'email' => 'superadmin@gmail.com',
             'password' => Hash::make('password'),
             'role' => 'superadmin',
+        ]);
+
+        $customer1 = Customer::create([
+            'name' => 'John Doe',
+            'email' => 'john@gmail.com',
+            'password' => Hash::make('password'),
+            'phone' => '081234567890',
+            'address' => 'Jl. Merdeka No. 123, Jakarta',
+        ]);
+
+        $customer2 = Customer::create([
+            'name' => 'Jane Smith',
+            'email' => 'jane@gmail.com',
+            'password' => Hash::make('password'),
+            'phone' => '081234567891',
+            'address' => 'Jl. Sudirman No. 456, Medan',
         ]);
 
         $electronics = Category::create(['name' => 'Electronics', 'slug' => 'electronics']);
@@ -41,7 +58,7 @@ class DatabaseSeeder extends Seeder
             'description' => $faker->paragraph(),
             'price' => 999.99,
             'stock_qty' => 50,
-            'image' => $faker->imageUrl(400, 400, 'technics'),
+            'image' => 'https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=400&h=400&fit=crop',
         ]);
 
         $laptop = Product::create([
@@ -51,7 +68,7 @@ class DatabaseSeeder extends Seeder
             'description' => $faker->paragraph(),
             'price' => 1299.99,
             'stock_qty' => 25,
-            'image' => $faker->imageUrl(400, 400, 'technics'),
+            'image' => 'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=400&h=400&fit=crop',
         ]);
 
         $tshirt = Product::create([
@@ -61,17 +78,17 @@ class DatabaseSeeder extends Seeder
             'description' => $faker->paragraph(),
             'price' => 29.99,
             'stock_qty' => 100,
-            'image' => $faker->imageUrl(400, 400, 'fashion'),
+            'image' => 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=400&h=400&fit=crop',
         ]);
 
         $order1 = Order::create([
-            'customer_id' => $user->id,
+            'customer_id' => $customer1->id,
             'total_amount' => 1029.98,
             'status' => 'paid',
         ]);
 
         $order2 = Order::create([
-            'customer_id' => $admin->id,
+            'customer_id' => $customer2->id,
             'total_amount' => 59.98,
             'status' => 'delivered',
         ]);
