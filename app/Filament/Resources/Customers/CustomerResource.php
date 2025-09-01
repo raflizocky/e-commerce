@@ -45,4 +45,9 @@ class CustomerResource extends Resource
             'edit' => EditCustomer::route('/{record}/edit'),
         ];
     }
+
+    public static function getNavigationBadge(): ?string
+    {
+        return (string) Customer::count();
+    }
 }
