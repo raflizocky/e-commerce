@@ -25,10 +25,10 @@ class DatabaseSeeder extends Seeder
         ]);
 
         $user = User::create([
-            'name' => 'User',
-            'email' => 'user@gmail.com',
+            'name' => 'Superadmin',
+            'email' => 'superadmin@gmail.com',
             'password' => Hash::make('password'),
-            'role' => 'user',
+            'role' => 'superadmin',
         ]);
 
         $electronics = Category::create(['name' => 'Electronics', 'slug' => 'electronics']);
@@ -65,13 +65,13 @@ class DatabaseSeeder extends Seeder
         ]);
 
         $order1 = Order::create([
-            'user_id' => $user->id,
+            'customer_id' => $user->id,
             'total_amount' => 1029.98,
             'status' => 'paid',
         ]);
 
         $order2 = Order::create([
-            'user_id' => $admin->id,
+            'customer_id' => $admin->id,
             'total_amount' => 59.98,
             'status' => 'delivered',
         ]);

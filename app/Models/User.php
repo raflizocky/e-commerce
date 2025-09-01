@@ -22,11 +22,6 @@ class User extends Authenticatable implements FilamentUser
         'password',
     ];
 
-    public function orders()
-    {
-        return $this->hasMany(Order::class);
-    }
-
     public function canAccessPanel(\Filament\Panel $panel): bool
     {
         return $this->role === 'admin';
