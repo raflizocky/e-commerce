@@ -13,7 +13,7 @@ class OrderForm
         return $schema
             ->components([
             Select::make('email')
-                ->relationship('user', 'email')
+                ->relationship('customer', 'email')
                 ->searchable()
                 ->preload()
                 ->required(),

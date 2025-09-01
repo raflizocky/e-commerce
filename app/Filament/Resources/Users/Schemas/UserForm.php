@@ -22,7 +22,7 @@ class UserForm
                     ->password()
                     ->required(),
                 Select::make('role')
-                    ->options(['user' => 'User', 'admin' => 'Admin'])
+                    ->options(['admin' => 'Admin', 'superadmin' => 'Superadmin'])
                     ->default('user')
                     ->required(),
             ]);
