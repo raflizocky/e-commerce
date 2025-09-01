@@ -20,6 +20,8 @@ class OrderResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedClipboardDocumentList;
 
+    protected static string|\UnitEnum|null $navigationGroup = 'Shop';
+
     public static function form(Schema $schema): Schema
     {
         return OrderForm::configure($schema);

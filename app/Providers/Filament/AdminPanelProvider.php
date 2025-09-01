@@ -59,6 +59,10 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->plugins([
                 FilamentApexChartsPlugin::make()
+            ])
+            ->navigationGroups([
+                'Shop',
+                'Settings',
             ]);
     }
 }
