@@ -4,6 +4,7 @@ import Home from "./pages/Home"
 import Products from "./pages/Products"
 import Categories from "./pages/Categories"
 import Settings from "./pages/Settings"
+import Footer from "./components/Footer"
 
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
           <Route path="/recommended" element={<Settings />} />
         </Routes>
       </div>
+      <Footer />
     </BrowserRouter>
   )
 }
