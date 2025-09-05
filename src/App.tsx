@@ -2,9 +2,9 @@ import { BrowserRouter, Routes, Route } from "react-router-dom"
 import Navbar from "./components/Navbar"
 import Home from "./pages/Home"
 import Products from "./pages/Products"
-import Settings from "./pages/Settings"
 import Footer from "./components/Footer"
 import Featured from "./pages/Featured"
+import Recommended from "./pages/Recommended"
 
 function App() {
   return (
@@ -15,7 +15,7 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/products" element={<Products />} />
           <Route path="/featured" element={<Featured />} />
-          <Route path="/recommended" element={<Settings />} />
+          <Route path="/recommended" element={<Recommended />} />
         </Routes>
       </div>
       <Footer />
