@@ -12,9 +12,9 @@ function Footer() {
                         href="https://raflizocky.netlify.app/"
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-amber-600 hover:underline ml-3 underline"
+                        className="text-amber-600 hover:underline ml-1 underline"
                     >
-                        Rafli Zocky Leonard
+                        RAFLI ZOCKY LEONARD
                     </a>
                 </div>
 
@@ -31,7 +31,7 @@ function Footer() {
                         href="https://github.com/raflizocky/e-commerce/tree/fe-react"
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-amber-600 hover:underline ml-3 underline"
+                        className="text-amber-600 hover:underline ml-1 underline"
                     >
                         HERE
                     </a>
