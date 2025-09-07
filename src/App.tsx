@@ -7,6 +7,8 @@ import Featured from "./pages/Featured"
 import Recommended from "./pages/Recommended"
 import SignIn from "./pages/SignIn"
 import SignUp from "./pages/SignUp"
+import UserPage from "./pages/UserPage"
+import ProductDetail from "./pages/ProductDetail"
 
 function App() {
   return (
@@ -16,10 +18,12 @@ function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/products" element={<Products />} />
+          <Route path="/product/:id" element={<ProductDetail />} />
           <Route path="/featured" element={<Featured />} />
           <Route path="/recommended" element={<Recommended />} />
           <Route path="/signin" element={<SignIn />} />
           <Route path="/signup" element={<SignUp />} />
+          <Route path="/account" element={<UserPage />} />
         </Routes>
       </div>
       <Footer />

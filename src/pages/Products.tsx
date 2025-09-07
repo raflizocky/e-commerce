@@ -1,4 +1,5 @@
 import { useState } from "react"
+import { Link } from "react-router-dom"
 
 const allProducts = [
     { id: 1, name: "Modern Sofa", category: "Living Room" },
@@ -27,7 +28,11 @@ function Products() {
             {/* Grid Products */}
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6">
                 {visibleProducts.map((product, i) => (
-                    <div key={product.id} className="border rounded-lg p-4 text-center hover:shadow">
+                    <Link
+                        to={`/product/${product.id}`}
+                        key={product.id}
+                        className="border rounded-lg p-4 text-center hover:shadow block"
+                    >
                         <img
                             src={`https://picsum.photos/400/300?random=${product.id + i}`}
                             alt={product.name}
@@ -35,7 +40,7 @@ function Products() {
                         />
                         <h3 className="font-medium">{product.name}</h3>
                         <p className="text-sm text-gray-500">{product.category}</p>
-                    </div>
+                    </Link>
                 ))}
             </div>
 

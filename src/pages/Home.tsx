@@ -46,7 +46,11 @@ function Home() {
                 </div>
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6">
                     {[...Array(8)].map((_, i) => (
-                        <div key={i} className="border rounded-lg p-4 text-center hover:shadow">
+                        <Link
+                            key={i}
+                            to={`/product/${i + 1}`}
+                            className="border rounded-lg p-4 text-center hover:shadow block"
+                        >
                             <img
                                 src={`https://picsum.photos/400/300?random=${i}`}
                                 alt={`Product ${i + 1}`}
@@ -54,7 +58,7 @@ function Home() {
                             />
                             <h3 className="font-medium">Furniture {i + 1}</h3>
                             <p className="text-sm text-gray-500">Category</p>
-                        </div>
+                        </Link>
                     ))}
                 </div>
             </section>
@@ -69,7 +73,11 @@ function Home() {
                 </div>
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6">
                     {[...Array(6)].map((_, i) => (
-                        <div key={i} className="border rounded-lg p-4 text-center hover:shadow">
+                        <Link
+                            key={i}
+                            to={`/product/${i + 100}`}
+                            className="border rounded-lg p-4 text-center hover:shadow block"
+                        >
                             <img
                                 src={`https://picsum.photos/400/300?random=${i + 20}`}
                                 alt={`Recommended ${i + 1}`}
@@ -77,7 +85,7 @@ function Home() {
                             />
                             <h3 className="font-medium">Item {i + 1}</h3>
                             <p className="text-sm text-gray-500">Category</p>
-                        </div>
+                        </Link>
                     ))}
                 </div>
             </section>
