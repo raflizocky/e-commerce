@@ -59,6 +59,8 @@ class DatabaseSeeder extends Seeder
             'price' => 999.99,
             'stock_qty' => 50,
             'image' => 'https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=400&h=400&fit=crop',
+            'is_featured' => true,
+            'is_recommended' => true,
         ]);
 
         $laptop = Product::create([
@@ -69,6 +71,8 @@ class DatabaseSeeder extends Seeder
             'price' => 1299.99,
             'stock_qty' => 25,
             'image' => 'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=400&h=400&fit=crop',
+            'is_featured' => true,
+            'is_recommended' => false,
         ]);
 
         $tshirt = Product::create([
@@ -79,6 +83,8 @@ class DatabaseSeeder extends Seeder
             'price' => 29.99,
             'stock_qty' => 100,
             'image' => 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=400&h=400&fit=crop',
+            'is_featured' => false,
+            'is_recommended' => true,
         ]);
 
         $order1 = Order::create([

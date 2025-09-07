@@ -21,6 +21,14 @@ class ProductController extends Controller
             $query->where('name', 'like', '%' . $request->search . '%');
         }
 
+        if ($request->boolean('is_featured')) {
+            $query->where('is_featured', true);
+        }
+
+        if ($request->boolean('is_recommended')) {
+            $query->where('is_recommended', true);
+        }
+
         $products = $query->paginate(12);
 
         return ProductResource::collection($products);

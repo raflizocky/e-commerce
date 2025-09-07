@@ -20,6 +20,8 @@ return new class extends Migration
             $table->decimal('price', 10, 2);
             $table->integer('stock_qty');
             $table->string('image')->nullable();
+            $table->boolean('is_featured')->default(false);
+            $table->boolean('is_recommended')->default(false);
             $table->timestamps();
         });
     }

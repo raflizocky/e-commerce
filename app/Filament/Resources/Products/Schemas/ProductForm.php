@@ -7,6 +7,7 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
 use Filament\Schemas\Schema;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Toggle;
 
 class ProductForm
 {
@@ -34,6 +35,11 @@ class ProductForm
                     ->numeric(),
                 FileUpload::make('image')
                     ->image(),
+                Toggle::make('is_featured')
+                    ->label('Featured'),
+                Toggle::make('is_recommended')
+                    ->label('Recommended'),
+
             ]);
     }
 }
