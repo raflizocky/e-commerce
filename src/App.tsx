@@ -9,6 +9,7 @@ import SignIn from "./pages/SignIn"
 import SignUp from "./pages/SignUp"
 import UserPage from "./pages/UserPage"
 import ProductDetail from "./pages/ProductDetail"
+import Checkout from "./pages/Checkout"
 
 function App() {
   return (
@@ -21,6 +22,7 @@ function App() {
           <Route path="/product/:id" element={<ProductDetail />} />
           <Route path="/featured" element={<Featured />} />
           <Route path="/recommended" element={<Recommended />} />
+          <Route path="/checkout" element={<Checkout />} />
           <Route path="/signin" element={<SignIn />} />
           <Route path="/signup" element={<SignUp />} />
           <Route path="/account" element={<UserPage />} />
