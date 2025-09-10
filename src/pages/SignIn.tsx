@@ -1,7 +1,37 @@
-import { Link } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 import { FaGoogle, FaFacebookF } from "react-icons/fa"
+import { useState } from "react"
+import { login } from "../services/auth"
 
 function SignIn() {
+    const navigate = useNavigate()
+    const [email, setEmail] = useState("")
+    const [password, setPassword] = useState("")
+    const [error, setError] = useState<string | null>(null)
+    const [loading, setLoading] = useState(false)
+
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault()
+        setError(null)
+        setLoading(true)
+        try {
+            const res = await login({ email, password })
+            localStorage.setItem("token", res.token)
+            navigate("/userpage")
+        }
+        catch (err: any) {
+            console.error(err);
+            const backendMessage =
+                err?.response?.data?.message ||
+                err?.response?.data?.error ||
+                err?.response?.data?.errors ||
+                err?.message
+            setError(typeof backendMessage === "string" ? backendMessage : "Login failed")
+        } finally {
+            setLoading(false)
+        }
+    }
+
     return (
         <div className="flex items-center justify-center min-h-screen bg-gray-50">
             <div className="w-full max-w-md bg-white p-8 rounded-lg shadow">
@@ -11,7 +41,7 @@ function SignIn() {
                 </p>
 
                 {/* Email Login Form */}
-                <form className="mt-6 space-y-4">
+                <form className="mt-6 space-y-4" onSubmit={handleSubmit}>
                     <div>
                         <label className="block text-sm font-medium text-gray-700">Email</label>
                         <input
@@ -19,6 +49,8 @@ function SignIn() {
                             placeholder="you@example.com"
                             className="mt-1 w-full px-4 py-2 border rounded-lg focus:ring-amber-500 focus:border-amber-500"
                             required
+                            value={email}
+                            onChange={e => setEmail(e.target.value)}
                         />
                     </div>
 
@@ -29,14 +61,21 @@ function SignIn() {
                             placeholder="••••••••"
                             className="mt-1 w-full px-4 py-2 border rounded-lg focus:ring-amber-500 focus:border-amber-500"
                             required
+                            value={password}
+                            onChange={e => setPassword(e.target.value)}
                         />
                     </div>
+
+                    {error && (
+                        <div className="text-red-500 text-sm text-center">{error}</div>
+                    )}
 
                     <button
                         type="submit"
                         className="w-full py-2 bg-amber-600 text-white rounded-lg hover:bg-amber-700 transition"
+                        disabled={loading}
                     >
-                        Sign In
+                        {loading ? "Signing In..." : "Sign In"}
                     </button>
                 </form>
 
@@ -60,7 +99,7 @@ function SignIn() {
                 </div>
 
                 <p className="text-sm text-gray-600 text-center mt-6">
-                    Don&apos;t have an account?{" "}
+                    Don&apos;t have an account?
                     <Link to="/signup" className="text-amber-600 hover:underline">
                         Sign Up
                     </Link>
