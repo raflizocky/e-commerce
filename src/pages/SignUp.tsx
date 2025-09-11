@@ -21,7 +21,7 @@ function SignUp() {
             if (res?.token) {
                 localStorage.setItem("token", res.token)
             }
-            navigate("/userpage")
+            navigate("/account")
         } catch (err: any) {
             console.error(err)
             const backendMessage =

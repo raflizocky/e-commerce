@@ -17,7 +17,7 @@ function SignIn() {
         try {
             const res = await login({ email, password })
             localStorage.setItem("token", res.token)
-            navigate("/userpage")
+            navigate("/account")
         }
         catch (err: any) {
             console.error(err);
