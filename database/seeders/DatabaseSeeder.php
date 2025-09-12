@@ -18,20 +18,22 @@ class DatabaseSeeder extends Seeder
     {
         $faker = Faker::create();
 
-        $admin = User::create([
+        // --- Users ---
+        User::create([
             'name' => 'Admin',
             'email' => 'admin@gmail.com',
             'password' => Hash::make('password'),
             'role' => 'admin',
         ]);
 
-        $superadmin = User::create([
+        User::create([
             'name' => 'Superadmin',
             'email' => 'superadmin@gmail.com',
             'password' => Hash::make('password'),
             'role' => 'superadmin',
         ]);
 
+        // --- Customers ---
         $customer1 = Customer::create([
             'name' => 'John Doe',
             'email' => 'john@gmail.com',
@@ -48,76 +50,82 @@ class DatabaseSeeder extends Seeder
             'address' => 'Jl. Sudirman No. 456, Medan',
         ]);
 
-        $electronics = Category::create(['name' => 'Electronics', 'slug' => 'electronics']);
-        $clothing = Category::create(['name' => 'Clothing', 'slug' => 'clothing']);
+        // --- Categories ---
+        $living = Category::create(['name' => 'Living Room', 'slug' => 'living-room']);
+        $dining = Category::create(['name' => 'Dining Room', 'slug' => 'dining-room']);
+        $bedroom = Category::create(['name' => 'Bedroom', 'slug' => 'bedroom']);
+        $office = Category::create(['name' => 'Office', 'slug' => 'office']);
 
-        $phone = Product::create([
-            'category_id' => $electronics->id,
-            'name' => 'iPhone 15',
-            'slug' => 'iphone-15',
-            'description' => $faker->paragraph(),
-            'price' => 999.99,
-            'stock_qty' => 50,
-            'image' => 'https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=400&h=400&fit=crop',
-            'is_featured' => true,
-            'is_recommended' => true,
-        ]);
+        // --- Furniture Products (20 pcs) ---
+        $products = [
+            // Living Room
+            ['Modern Sofa', $living->id, 499.99, 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=400&h=400&fit=crop'],
+            ['Classic Armchair', $living->id, 199.99, 'https://images.unsplash.com/photo-1585559604903-f7c1f3b4b9c8?w=400&h=400&fit=crop'],
+            ['Wooden Coffee Table', $living->id, 149.99, 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=400&h=400&fit=crop'],
+            ['Minimalist TV Stand', $living->id, 179.99, 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=400&h=400&fit=crop'],
+            ['Bookshelf Cabinet', $living->id, 249.99, 'https://images.unsplash.com/photo-1616627985120-68f35c2c22fc?w=400&h=400&fit=crop'],
 
-        $laptop = Product::create([
-            'category_id' => $electronics->id,
-            'name' => 'MacBook Air',
-            'slug' => 'macbook-air',
-            'description' => $faker->paragraph(),
-            'price' => 1299.99,
-            'stock_qty' => 25,
-            'image' => 'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=400&h=400&fit=crop',
-            'is_featured' => true,
-            'is_recommended' => false,
-        ]);
+            // Dining Room
+            ['Dining Table Set', $dining->id, 699.99, 'https://images.unsplash.com/photo-1505691938895-1758d7feb511?w=400&h=400&fit=crop'],
+            ['Wooden Chair', $dining->id, 89.99, 'https://images.unsplash.com/photo-1550583724-b2692b85b150?w=400&h=400&fit=crop'],
+            ['Bar Stool', $dining->id, 119.99, 'https://images.unsplash.com/photo-1616627566165-fc2a06a9bc14?w=400&h=400&fit=crop'],
+            ['Sideboard Cabinet', $dining->id, 399.99, 'https://images.unsplash.com/photo-1600210492486-724fe5c67fb3?w=400&h=400&fit=crop'],
+            ['Dining Bench', $dining->id, 229.99, 'https://images.unsplash.com/photo-1616627566741-3bc7a64b0c02?w=400&h=400&fit=crop'],
 
-        $tshirt = Product::create([
-            'category_id' => $clothing->id,
-            'name' => 'Basic T-Shirt',
-            'slug' => 'basic-tshirt',
-            'description' => $faker->paragraph(),
-            'price' => 29.99,
-            'stock_qty' => 100,
-            'image' => 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=400&h=400&fit=crop',
-            'is_featured' => false,
-            'is_recommended' => true,
-        ]);
+            // Bedroom
+            ['King Size Bed', $bedroom->id, 799.99, 'https://images.unsplash.com/photo-1600607687126-1d4d2b85d2b2?w=400&h=400&fit=crop'],
+            ['Nightstand', $bedroom->id, 139.99, 'https://images.unsplash.com/photo-1600607687181-d30ef6a0a913?w=400&h=400&fit=crop'],
+            ['Wardrobe Closet', $bedroom->id, 599.99, 'https://images.unsplash.com/photo-1600607687191-60f9d85cb5c3?w=400&h=400&fit=crop'],
+            ['Dresser with Mirror', $bedroom->id, 459.99, 'https://images.unsplash.com/photo-1616627567170-09844d5d1c2a?w=400&h=400&fit=crop'],
+            ['Bunk Bed', $bedroom->id, 549.99, 'https://images.unsplash.com/photo-1600607687191-2a1340b5bfcf?w=400&h=400&fit=crop'],
 
+            // Office
+            ['Ergonomic Office Chair', $office->id, 249.99, 'https://images.unsplash.com/photo-1598300055091-2341a4f9089a?w=400&h=400&fit=crop'],
+            ['Office Desk', $office->id, 349.99, 'https://images.unsplash.com/photo-1598300054760-4a7df6e480c9?w=400&h=400&fit=crop'],
+            ['Bookshelf', $office->id, 199.99, 'https://images.unsplash.com/photo-1600607687184-3a4d1e3b6aee?w=400&h=400&fit=crop'],
+            ['Filing Cabinet', $office->id, 189.99, 'https://images.unsplash.com/photo-1600607687119-5a57d4d9e5f9?w=400&h=400&fit=crop'],
+            ['Conference Table', $office->id, 799.99, 'https://images.unsplash.com/photo-1598300055091-1237a4e409ab?w=400&h=400&fit=crop'],
+        ];
+
+        foreach ($products as $p) {
+            Product::create([
+                'category_id'   => $p[1],
+                'name'          => $p[0],
+                'slug'          => strtolower(str_replace(' ', '-', $p[0])),
+                'description'   => $faker->paragraph(),
+                'price'         => $p[2],
+                'stock_qty'     => $faker->numberBetween(10, 100),
+                'image'         => $p[3],
+                'is_featured'   => $faker->boolean(),
+                'is_recommended' => $faker->boolean(),
+            ]);
+        }
+
+        // --- Orders Example ---
         $order1 = Order::create([
             'customer_id' => $customer1->id,
-            'total_amount' => 1029.98,
+            'total_amount' => 999.98,
             'status' => 'paid',
         ]);
 
         $order2 = Order::create([
             'customer_id' => $customer2->id,
-            'total_amount' => 59.98,
+            'total_amount' => 459.99,
             'status' => 'delivered',
         ]);
 
         OrderItem::create([
             'order_id' => $order1->id,
-            'product_id' => $phone->id,
-            'quantity' => 1,
-            'price' => 999.99,
-        ]);
-
-        OrderItem::create([
-            'order_id' => $order1->id,
-            'product_id' => $tshirt->id,
-            'quantity' => 1,
-            'price' => 29.99,
+            'product_id' => 1,
+            'quantity' => 2,
+            'price' => 499.99,
         ]);
 
         OrderItem::create([
             'order_id' => $order2->id,
-            'product_id' => $tshirt->id,
-            'quantity' => 2,
-            'price' => 29.99,
+            'product_id' => 14,
+            'quantity' => 1,
+            'price' => 459.99,
         ]);
     }
 }
