@@ -1,12 +1,48 @@
+import { useEffect, useState } from "react"
 import { Link } from "react-router-dom"
+import { getFeaturedProducts, getRecommendedProducts } from "../services/product"
+
+interface Product {
+    id: number
+    name: string
+    slug: string
+    price: string
+    image: string | null
+    category: { id: number; name: string }
+}
 
 function Home() {
+    const [featured, setFeatured] = useState<Product[]>([])
+    const [recommended, setRecommended] = useState<Product[]>([])
+    const [loadingFeatured, setLoadingFeatured] = useState(true)
+    const [loadingRecommended, setLoadingRecommended] = useState(true)
+
+    useEffect(() => {
+        getFeaturedProducts()
+            .then(setFeatured)
+            .catch(console.error)
+            .finally(() => setLoadingFeatured(false))
+
+        getRecommendedProducts()
+            .then(setRecommended)
+            .catch(console.error)
+            .finally(() => setLoadingRecommended(false))
+    }, [])
+
+    // 🔹 Skeleton card component
+    const SkeletonCard = () => (
+        <div className="border rounded-lg p-4 animate-pulse">
+            <div className="bg-gray-200 h-40 w-full rounded mb-3"></div>
+            <div className="h-4 bg-gray-200 rounded w-3/4 mx-auto mb-2"></div>
+            <div className="h-3 bg-gray-200 rounded w-1/2 mx-auto"></div>
+        </div>
+    )
+
     return (
         <div>
             {/* Hero Section */}
             <section className="bg-gray-50 border-b">
                 <div className="max-w-7xl mx-auto px-4 py-12 grid md:grid-cols-2 gap-8 items-center">
-                    {/* Text */}
                     <div>
                         <h1 className="text-4xl font-bold text-gray-900 leading-snug">
                             Make your home <br />
@@ -24,8 +60,6 @@ function Home() {
                             Shop Now
                         </Link>
                     </div>
-
-                    {/* Hero Image */}
                     <div className="flex justify-center">
                         <img
                             src="https://images.unsplash.com/photo-1615874959474-d609969a20ed?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80"
@@ -45,21 +79,28 @@ function Home() {
                     </Link>
                 </div>
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6">
-                    {[...Array(8)].map((_, i) => (
-                        <Link
-                            key={i}
-                            to={`/product/${i + 1}`}
-                            className="border rounded-lg p-4 text-center hover:shadow block"
-                        >
-                            <img
-                                src={`https://picsum.photos/400/300?random=${i}`}
-                                alt={`Product ${i + 1}`}
-                                className="mx-auto mb-3 rounded"
-                            />
-                            <h3 className="font-medium">Furniture {i + 1}</h3>
-                            <p className="text-sm text-gray-500">Category</p>
-                        </Link>
-                    ))}
+                    {loadingFeatured
+                        ? [...Array(8)].map((_, i) => <SkeletonCard key={i} />)
+                        : featured.map((product) => (
+                            <Link
+                                key={product.id}
+                                to={`/product/${product.id}`}
+                                className="border rounded-lg p-4 text-center hover:shadow block"
+                            >
+                                <img
+                                    src={product.image || "https://via.placeholder.com/400x300"}
+                                    alt={product.name}
+                                    className="mx-auto mb-3 rounded h-40 w-full object-cover"
+                                />
+                                <h3 className="font-medium">{product.name}</h3>
+                                <p className="text-sm text-gray-500">
+                                    {product.category?.name}
+                                </p>
+                                <p className="text-amber-600 font-semibold mt-1">
+                                    Rp {parseInt(product.price).toLocaleString("id-ID")}
+                                </p>
+                            </Link>
+                        ))}
                 </div>
             </section>
 
@@ -72,21 +113,28 @@ function Home() {
                     </Link>
                 </div>
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6">
-                    {[...Array(6)].map((_, i) => (
-                        <Link
-                            key={i}
-                            to={`/product/${i + 100}`}
-                            className="border rounded-lg p-4 text-center hover:shadow block"
-                        >
-                            <img
-                                src={`https://picsum.photos/400/300?random=${i + 20}`}
-                                alt={`Recommended ${i + 1}`}
-                                className="mx-auto mb-3 rounded"
-                            />
-                            <h3 className="font-medium">Item {i + 1}</h3>
-                            <p className="text-sm text-gray-500">Category</p>
-                        </Link>
-                    ))}
+                    {loadingRecommended
+                        ? [...Array(6)].map((_, i) => <SkeletonCard key={i} />)
+                        : recommended.map((product) => (
+                            <Link
+                                key={product.id}
+                                to={`/product/${product.id}`}
+                                className="border rounded-lg p-4 text-center hover:shadow block"
+                            >
+                                <img
+                                    src={product.image || "https://via.placeholder.com/400x300"}
+                                    alt={product.name}
+                                    className="mx-auto mb-3 rounded h-40 w-full object-cover"
+                                />
+                                <h3 className="font-medium">{product.name}</h3>
+                                <p className="text-sm text-gray-500">
+                                    {product.category?.name}
+                                </p>
+                                <p className="text-amber-600 font-semibold mt-1">
+                                    Rp {parseInt(product.price).toLocaleString("id-ID")}
+                                </p>
+                            </Link>
+                        ))}
                 </div>
             </section>
         </div>

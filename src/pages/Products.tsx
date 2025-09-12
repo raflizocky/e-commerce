@@ -1,59 +1,121 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Link } from "react-router-dom"
+import { getProducts } from "../services/product"
 
-const allProducts = [
-    { id: 1, name: "Modern Sofa", category: "Living Room" },
-    { id: 2, name: "Wooden Chair", category: "Dining" },
-    { id: 3, name: "Minimalist Table", category: "Dining" },
-    { id: 4, name: "Cozy Armchair", category: "Living Room" },
-    { id: 5, name: "Bookshelf", category: "Office" },
-    { id: 6, name: "Bed Frame", category: "Bedroom" },
-    { id: 7, name: "Desk Lamp", category: "Office" },
-    { id: 8, name: "Coffee Table", category: "Living Room" },
-    { id: 9, name: "Wardrobe", category: "Bedroom" },
-    { id: 10, name: "Nightstand", category: "Bedroom" },
-]
+interface Product {
+    id: number
+    name: string
+    slug: string
+    price: string
+    image: string | null
+    category: { id: number; name: string }
+}
 
 function Products() {
-    const [visibleCount, setVisibleCount] = useState(6)
+    const [products, setProducts] = useState<Product[]>([])
+    const [loading, setLoading] = useState(true)
+    const [error, setError] = useState<string | null>(null)
+    const [page, setPage] = useState(1)
+    const [hasMore, setHasMore] = useState(true)
 
-    const visibleProducts = allProducts.slice(0, visibleCount)
+    const fetchProducts = async (pageNum: number) => {
+        setLoading(true)
+        setError(null)
+        try {
+            const res = await getProducts(pageNum)
+            if (res.length === 0) {
+                setHasMore(false) // No more data
+            } else {
+                if (pageNum === 1) {
+                    setProducts(res)
+                } else {
+                    setProducts((prev) => [...prev, ...res])
+                }
+                setHasMore(res.length === 6) // Assuming per_page is 6
+            }
+        } catch (err) {
+            setError("Failed to load products. Please try again.")
+            console.error(err)
+        } finally {
+            setLoading(false)
+        }
+    }
 
-    const handleShowMore = () => {
-        setVisibleCount((prev) => prev + 6)
+    // Initial load
+    useEffect(() => {
+        fetchProducts(1)
+    }, [])
+
+    const SkeletonCard = () => (
+        <div className="border rounded-lg p-4 animate-pulse">
+            <div className="bg-gray-200 h-40 w-full rounded mb-3"></div>
+            <div className="h-4 bg-gray-200 rounded w-3/4 mx-auto mb-2"></div>
+            <div className="h-3 bg-gray-200 rounded w-1/2 mx-auto"></div>
+        </div>
+    )
+
+    const ProductCard = ({ product }: { product: Product }) => {
+        const price = parseFloat(product.price)
+        const formattedPrice = isNaN(price) ? "Rp 0" : `Rp ${price.toLocaleString("id-ID")}`
+
+        return (
+            <Link
+                to={`/product/${product.id}`}
+                className="border rounded-lg p-4 text-center hover:shadow block"
+            >
+                <div className="w-full h-40 mb-3 rounded overflow-hidden">
+                    <img
+                        src={product.image || "https://via.placeholder.com/400x300"}
+                        alt={product.name || "Product image"}
+                        className="w-full h-full object-cover"
+                    />
+                </div>
+                <h3 className="font-medium">{product.name}</h3>
+                <p className="text-sm text-gray-500">{product.category?.name}</p>
+                <p className="text-amber-600 font-semibold mt-1">{formattedPrice}</p>
+            </Link>
+        )
     }
 
     return (
         <div className="max-w-7xl mx-auto px-4 py-12">
             {/* Grid Products */}
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6">
-                {visibleProducts.map((product, i) => (
-                    <Link
-                        to={`/product/${product.id}`}
-                        key={product.id}
-                        className="border rounded-lg p-4 text-center hover:shadow block"
-                    >
-                        <img
-                            src={`https://picsum.photos/400/300?random=${product.id + i}`}
-                            alt={product.name}
-                            className="mx-auto mb-3 rounded"
-                        />
-                        <h3 className="font-medium">{product.name}</h3>
-                        <p className="text-sm text-gray-500">{product.category}</p>
-                    </Link>
-                ))}
+                {/* Show skeletons only on first load */}
+                {loading && page === 1
+                    ? [...Array(6)].map((_, i) => <SkeletonCard key={i} />)
+                    : products.map((product) => (
+                        <ProductCard key={product.id} product={product} />
+                    ))}
             </div>
 
+            {/* Error Message */}
+            {error && (
+                <p className="col-span-full text-red-500 text-center py-4 mt-8">
+                    {error}
+                </p>
+            )}
+
             {/* Show More Button */}
-            {visibleCount < allProducts.length && (
+            {!loading && hasMore && (
                 <div className="flex justify-center mt-8">
                     <button
-                        onClick={handleShowMore}
+                        onClick={() => {
+                            setPage((prev) => prev + 1)
+                            fetchProducts(page + 1)
+                        }}
                         className="px-6 py-2 bg-amber-600 text-white rounded-lg shadow hover:bg-amber-700 transition"
                     >
                         Show More
                     </button>
                 </div>
+            )}
+
+            {/* Show "No More Products" when done */}
+            {!hasMore && !loading && products.length > 0 && (
+                <p className="text-center text-gray-500 mt-8">
+                    That's all for now!
+                </p>
             )}
         </div>
     )
