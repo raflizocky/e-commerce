@@ -56,35 +56,35 @@ class DatabaseSeeder extends Seeder
         $bedroom = Category::create(['name' => 'Bedroom', 'slug' => 'bedroom']);
         $office = Category::create(['name' => 'Office', 'slug' => 'office']);
 
-        // --- Furniture Products (20 pcs) ---
+        // --- Furniture Products with Reliable Images ---
         $products = [
-            // Living Room
-            ['Modern Sofa', $living->id, 499.99, 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=400&h=400&fit=crop'],
-            ['Classic Armchair', $living->id, 199.99, 'https://images.unsplash.com/photo-1585559604903-f7c1f3b4b9c8?w=400&h=400&fit=crop'],
-            ['Wooden Coffee Table', $living->id, 149.99, 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=400&h=400&fit=crop'],
-            ['Minimalist TV Stand', $living->id, 179.99, 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=400&h=400&fit=crop'],
-            ['Bookshelf Cabinet', $living->id, 249.99, 'https://images.unsplash.com/photo-1616627985120-68f35c2c22fc?w=400&h=400&fit=crop'],
+            // Living Room - Using Picsum (Lorem Picsum) with furniture-related seeds
+            ['Modern Sofa', $living->id, 499.99, 'https://picsum.photos/seed/sofa1/400/400'],
+            ['Classic Armchair', $living->id, 199.99, 'https://picsum.photos/seed/chair1/400/400'],
+            ['Wooden Coffee Table', $living->id, 149.99, 'https://picsum.photos/seed/table1/400/400'],
+            ['Minimalist TV Stand', $living->id, 179.99, 'https://picsum.photos/seed/tvstand1/400/400'],
+            ['Bookshelf Cabinet', $living->id, 249.99, 'https://picsum.photos/seed/bookshelf1/400/400'],
 
             // Dining Room
-            ['Dining Table Set', $dining->id, 699.99, 'https://images.unsplash.com/photo-1505691938895-1758d7feb511?w=400&h=400&fit=crop'],
-            ['Wooden Chair', $dining->id, 89.99, 'https://images.unsplash.com/photo-1550583724-b2692b85b150?w=400&h=400&fit=crop'],
-            ['Bar Stool', $dining->id, 119.99, 'https://images.unsplash.com/photo-1616627566165-fc2a06a9bc14?w=400&h=400&fit=crop'],
-            ['Sideboard Cabinet', $dining->id, 399.99, 'https://images.unsplash.com/photo-1600210492486-724fe5c67fb3?w=400&h=400&fit=crop'],
-            ['Dining Bench', $dining->id, 229.99, 'https://images.unsplash.com/photo-1616627566741-3bc7a64b0c02?w=400&h=400&fit=crop'],
+            ['Dining Table Set', $dining->id, 699.99, 'https://picsum.photos/seed/dining1/400/400'],
+            ['Wooden Chair', $dining->id, 89.99, 'https://picsum.photos/seed/woodchair1/400/400'],
+            ['Bar Stool', $dining->id, 119.99, 'https://picsum.photos/seed/barstool1/400/400'],
+            ['Sideboard Cabinet', $dining->id, 399.99, 'https://picsum.photos/seed/sideboard1/400/400'],
+            ['Dining Bench', $dining->id, 229.99, 'https://picsum.photos/seed/bench1/400/400'],
 
             // Bedroom
-            ['King Size Bed', $bedroom->id, 799.99, 'https://images.unsplash.com/photo-1600607687126-1d4d2b85d2b2?w=400&h=400&fit=crop'],
-            ['Nightstand', $bedroom->id, 139.99, 'https://images.unsplash.com/photo-1600607687181-d30ef6a0a913?w=400&h=400&fit=crop'],
-            ['Wardrobe Closet', $bedroom->id, 599.99, 'https://images.unsplash.com/photo-1600607687191-60f9d85cb5c3?w=400&h=400&fit=crop'],
-            ['Dresser with Mirror', $bedroom->id, 459.99, 'https://images.unsplash.com/photo-1616627567170-09844d5d1c2a?w=400&h=400&fit=crop'],
-            ['Bunk Bed', $bedroom->id, 549.99, 'https://images.unsplash.com/photo-1600607687191-2a1340b5bfcf?w=400&h=400&fit=crop'],
+            ['King Size Bed', $bedroom->id, 799.99, 'https://picsum.photos/seed/bed1/400/400'],
+            ['Nightstand', $bedroom->id, 139.99, 'https://picsum.photos/seed/nightstand1/400/400'],
+            ['Wardrobe Closet', $bedroom->id, 599.99, 'https://picsum.photos/seed/wardrobe1/400/400'],
+            ['Dresser with Mirror', $bedroom->id, 459.99, 'https://picsum.photos/seed/dresser1/400/400'],
+            ['Bunk Bed', $bedroom->id, 549.99, 'https://picsum.photos/seed/bunk1/400/400'],
 
             // Office
-            ['Ergonomic Office Chair', $office->id, 249.99, 'https://images.unsplash.com/photo-1598300055091-2341a4f9089a?w=400&h=400&fit=crop'],
-            ['Office Desk', $office->id, 349.99, 'https://images.unsplash.com/photo-1598300054760-4a7df6e480c9?w=400&h=400&fit=crop'],
-            ['Bookshelf', $office->id, 199.99, 'https://images.unsplash.com/photo-1600607687184-3a4d1e3b6aee?w=400&h=400&fit=crop'],
-            ['Filing Cabinet', $office->id, 189.99, 'https://images.unsplash.com/photo-1600607687119-5a57d4d9e5f9?w=400&h=400&fit=crop'],
-            ['Conference Table', $office->id, 799.99, 'https://images.unsplash.com/photo-1598300055091-1237a4e409ab?w=400&h=400&fit=crop'],
+            ['Ergonomic Office Chair', $office->id, 249.99, 'https://picsum.photos/seed/officechair1/400/400'],
+            ['Office Desk', $office->id, 349.99, 'https://picsum.photos/seed/desk1/400/400'],
+            ['Bookshelf', $office->id, 199.99, 'https://picsum.photos/seed/bookshelf2/400/400'],
+            ['Filing Cabinet', $office->id, 189.99, 'https://picsum.photos/seed/filing1/400/400'],
+            ['Conference Table', $office->id, 799.99, 'https://picsum.photos/seed/conference1/400/400'],
         ];
 
         foreach ($products as $p) {
