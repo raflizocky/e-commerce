@@ -24,7 +24,7 @@ function Products() {
         try {
             const res = await getProducts(pageNum)
             if (res.length === 0) {
-                setHasMore(false) // No more data
+                setHasMore(false)
             } else {
                 if (pageNum === 1) {
                     setProducts(res)
@@ -47,8 +47,8 @@ function Products() {
     }, [])
 
     const SkeletonCard = () => (
-        <div className="border rounded-lg p-4 animate-pulse">
-            <div className="bg-gray-200 h-40 w-full rounded mb-3"></div>
+        <div className="border border-gray-200 rounded-xl p-4 bg-white animate-pulse">
+            <div className="aspect-[4/3] bg-gray-200 rounded-xl mb-3"></div>
             <div className="h-4 bg-gray-200 rounded w-3/4 mx-auto mb-2"></div>
             <div className="h-3 bg-gray-200 rounded w-1/2 mx-auto"></div>
         </div>
@@ -61,27 +61,36 @@ function Products() {
         return (
             <Link
                 to={`/product/${product.id}`}
-                className="border rounded-lg p-4 text-center hover:shadow block"
+                className="block group border border-gray-200 rounded-xl p-4 bg-white hover:shadow-lg hover:-translate-y-1 transition-all duration-300 ease-out text-center focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2"
+                aria-label={`View ${product.name}`}
             >
-                <div className="w-full h-40 mb-3 rounded overflow-hidden">
+                <div className="relative overflow-hidden rounded-xl aspect-[4/3] mb-3 bg-gray-50">
                     <img
                         src={product.image || "https://via.placeholder.com/400x300"}
                         alt={product.name || "Product image"}
-                        className="w-full h-full object-cover"
+                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                        onError={(e) => {
+                            const target = e.target as HTMLImageElement
+                            target.src = "https://via.placeholder.com/400x300"
+                        }}
+                        loading="lazy"
                     />
                 </div>
-                <h3 className="font-medium">{product.name}</h3>
-                <p className="text-sm text-gray-500">{product.category?.name}</p>
-                <p className="text-amber-600 font-semibold mt-1">{formattedPrice}</p>
+
+                <h3 className="font-medium text-gray-900 text-sm line-clamp-2 mb-1">
+                    {product.name}
+                </h3>
+                <p className="text-xs text-gray-500 mb-2">{product.category?.name}</p>
+                <p className="text-amber-600 font-semibold text-base">
+                    {formattedPrice}
+                </p>
             </Link>
         )
     }
 
     return (
-        <div className="max-w-7xl mx-auto px-4 py-12">
-            {/* Grid Products */}
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6">
-                {/* Show skeletons only on first load */}
+        <div className="max-w-7xl mx-auto px-4 py-16">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
                 {loading && page === 1
                     ? [...Array(6)].map((_, i) => <SkeletonCard key={i} />)
                     : products.map((product) => (
@@ -89,33 +98,74 @@ function Products() {
                     ))}
             </div>
 
-            {/* Error Message */}
             {error && (
-                <p className="col-span-full text-red-500 text-center py-4 mt-8">
+                <p className="col-span-full text-center py-8 text-gray-600 text-lg">
                     {error}
                 </p>
             )}
 
-            {/* Show More Button */}
             {!loading && hasMore && (
-                <div className="flex justify-center mt-8">
+                <div className="flex justify-center mt-16">
                     <button
                         onClick={() => {
                             setPage((prev) => prev + 1)
                             fetchProducts(page + 1)
                         }}
-                        className="px-6 py-2 bg-amber-600 text-white rounded-lg shadow hover:bg-amber-700 transition"
+                        className="px-8 py-3 bg-white border-2 border-amber-600 text-amber-600 rounded-xl font-medium hover:bg-amber-50 hover:border-amber-700 hover:text-amber-700 transition-all duration-200 shadow-sm hover:shadow-md focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2"
                     >
-                        Show More
+                        Load More Products
                     </button>
                 </div>
             )}
 
-            {/* Show "No More Products" when done */}
             {!hasMore && !loading && products.length > 0 && (
-                <p className="text-center text-gray-500 mt-8">
-                    That's all for now!
-                </p>
+                <div className="text-center py-16">
+                    <svg
+                        className="w-12 h-12 text-gray-200 mx-auto mb-4"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                        xmlns="http://www.w3.org/2000/svg"
+                    >
+                        <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth="2"
+                            d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                        ></path>
+                    </svg>
+                    <p className="text-gray-500 text-lg font-medium">
+                        You’ve seen everything!
+                    </p>
+                    <p className="text-gray-400 text-sm mt-1">
+                        Check back later for new arrivals.
+                    </p>
+                </div>
+            )}
+
+            {!loading && products.length === 0 && !error && (
+                <div className="text-center py-16">
+                    <svg
+                        className="w-16 h-16 text-gray-200 mx-auto mb-4"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                        xmlns="http://www.w3.org/2000/svg"
+                    >
+                        <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth="2"
+                            d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
+                        ></path>
+                    </svg>
+                    <p className="text-gray-500 text-lg font-medium">
+                        No products found
+                    </p>
+                    <p className="text-gray-400 text-sm mt-1">
+                        Try adjusting your filters or browse our categories.
+                    </p>
+                </div>
             )}
         </div>
     )
