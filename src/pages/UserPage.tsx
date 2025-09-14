@@ -1,35 +1,100 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
+import { getProfile, updateProfile } from "../services/auth"
 
 function UserPage() {
     const [activeTab, setActiveTab] = useState<"account" | "wishlist" | "orders">("account")
-
-    // State user info
     const [userInfo, setUserInfo] = useState({
-        fullName: "Rafli Zocky",
-        email: "raflizocky@gmail.com",
-        address: "Jl. Merdeka No. 45, Jakarta",
-        phone: "+62 812 3456 7890",
-        joined: "September 7, 2024",
+        fullName: "",
+        email: "",
+        phone: "",
+        address: "",
     })
-
+    const [loading, setLoading] = useState(true)
     const [isEditing, setIsEditing] = useState(false)
     const [isSaving, setIsSaving] = useState(false)
 
-    // Handle input change
+    useEffect(() => {
+        const fetchProfile = async () => {
+            try {
+                const response = await getProfile() // 👈 Returns { data: { ... } }
+                console.log("✅ API Response:", response)
+
+                const profile = response.data
+
+                setUserInfo({
+                    fullName: profile.name || "",
+                    email: profile.email || "",
+                    phone: profile.phone || "",
+                    address: profile.address || "",
+                })
+            } catch (error) {
+                console.error("❌ Failed to load profile:", error)
+            } finally {
+                setLoading(false)
+            }
+        }
+
+        fetchProfile()
+    }, [])
+
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target
         setUserInfo((prev) => ({ ...prev, [name]: value }))
     }
 
-    // Handle form submission
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
         setIsSaving(true)
-        // Simulate API call
-        setTimeout(() => {
-            setIsSaving(false)
+        try {
+            await updateProfile({
+                name: userInfo.fullName,
+                phone: userInfo.phone,
+                address: userInfo.address,
+            })
+            setUserInfo((prev) => ({
+                ...prev,
+                fullName: userInfo.fullName,
+                phone: userInfo.phone,
+                address: userInfo.address,
+            }))
             setIsEditing(false)
-        }, 800)
+        } catch (error) {
+            console.error("Failed to update profile:", error)
+        } finally {
+            setIsSaving(false)
+        }
+    }
+
+    if (loading) {
+        return (
+            <div className="max-w-5xl mx-auto py-12 px-4">
+                <div className="border-b border-gray-200 mb-8 flex space-x-1">
+                    {["account", "wishlist", "orders"].map((tab) => (
+                        <div key={tab} className="h-8 bg-gray-200 rounded animate-pulse w-24"></div>
+                    ))}
+                </div>
+                <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
+                    <div className="relative h-48 md:h-60 bg-gray-200 animate-pulse"></div>
+                    <div className="p-8">
+                        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6">
+                            <div className="w-24 h-24 rounded-full bg-gray-200 animate-pulse"></div>
+                            <div className="flex-1 space-y-3">
+                                <div className="h-6 bg-gray-200 rounded w-3/4 animate-pulse"></div>
+                                <div className="h-4 bg-gray-200 rounded w-1/2 animate-pulse"></div>
+                            </div>
+                        </div>
+                        <div className="border-t border-gray-100 pt-8 space-y-4">
+                            {[...Array(4)].map((_, i) => (
+                                <div key={i} className="flex gap-4">
+                                    <div className="h-4 bg-gray-200 rounded w-1/4 animate-pulse"></div>
+                                    <div className="h-4 bg-gray-200 rounded w-3/4 animate-pulse"></div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        )
     }
 
     return (
@@ -41,8 +106,8 @@ function UserPage() {
                         key={tab}
                         onClick={() => setActiveTab(tab as any)}
                         className={`relative pb-3 px-4 text-sm font-medium transition-colors duration-200 ${activeTab === tab
-                                ? "text-amber-600 border-b-2 border-amber-600"
-                                : "text-gray-500 hover:text-gray-700"
+                            ? "text-amber-600 border-b-2 border-amber-600"
+                            : "text-gray-500 hover:text-gray-700"
                             }`}
                         aria-current={activeTab === tab ? "page" : undefined}
                     >
@@ -61,7 +126,7 @@ function UserPage() {
                 {/* Account Tab */}
                 {activeTab === "account" && (
                     <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
-                        {/* Banner — Fixed picsum URL (no trailing space!) */}
+                        {/* Banner — Using picsum.photos */}
                         <div className="relative h-48 md:h-60">
                             <img
                                 src={`https://picsum.photos/id/${Math.floor(Math.random() * 100) + 1}/1200/400`}
@@ -70,7 +135,7 @@ function UserPage() {
                                 loading="lazy"
                                 onError={(e) => {
                                     const target = e.target as HTMLImageElement
-                                    target.src = "https://picsum.photos/id/1/1200/400" // Fallback
+                                    target.src = "https://picsum.photos/id/1/1200/400"
                                 }}
                             />
                             <button
@@ -90,9 +155,6 @@ function UserPage() {
                             <div className="flex-1">
                                 <h1 className="text-2xl font-bold text-gray-900">{userInfo.fullName}</h1>
                                 <p className="text-gray-600 mt-1">{userInfo.email}</p>
-                                <p className="text-sm text-gray-500 mt-2">
-                                    Member since {userInfo.joined}
-                                </p>
                             </div>
                         </div>
 
@@ -121,113 +183,31 @@ function UserPage() {
                     </div>
                 )}
 
-                {/* Wishlist Tab — Using picsum.photos */}
+                {/* Wishlist Tab */}
                 {activeTab === "wishlist" && (
                     <div className="bg-white rounded-2xl shadow-lg p-8">
                         <h2 className="text-2xl font-bold text-gray-900 mb-8">My Wishlist</h2>
-                        {[
-                            { id: 1, name: "Minimalist Wooden Chair", price: 129.99 },
-                            { id: 2, name: "Modern Floor Lamp", price: 89.99 },
-                            { id: 3, name: "Cotton Throw Blanket", price: 45.99 },
-                        ].length > 0 ? (
-                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                                {[
-                                    { id: 1, name: "Minimalist Wooden Chair", price: 129.99 },
-                                    { id: 2, name: "Modern Floor Lamp", price: 89.99 },
-                                    { id: 3, name: "Cotton Throw Blanket", price: 45.99 },
-                                ].map((item) => (
-                                    <div
-                                        key={item.id}
-                                        className="border border-gray-200 rounded-xl overflow-hidden bg-white hover:shadow-lg transition-all duration-300 group"
-                                    >
-                                        <div className="relative aspect-[4/3] overflow-hidden">
-                                            <img
-                                                src={`https://picsum.photos/id/${Math.floor(Math.random() * 100) + 100}/400/300`}
-                                                alt={item.name}
-                                                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                                                loading="lazy"
-                                                onError={(e) => {
-                                                    const target = e.target as HTMLImageElement
-                                                    target.src = "https://picsum.photos/id/100/400/300"
-                                                }}
-                                            />
-                                        </div>
-                                        <div className="p-5">
-                                            <h3 className="font-medium text-gray-900 mb-1 line-clamp-2">
-                                                {item.name}
-                                            </h3>
-                                            <p className="text-amber-600 font-semibold mb-3">
-                                                Rp {item.price.toLocaleString("id-ID")}
-                                            </p>
-                                            <button className="w-full px-4 py-2 bg-amber-600 text-white text-sm rounded-lg hover:bg-amber-700 transition flex items-center justify-center gap-1">
-                                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 3h2l.4 2M7 13h10l4-7H5.4M12 19v-5m0 0V9m0 5h-5" />
-                                                </svg>
-                                                Move to Cart
-                                            </button>
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-                        ) : (
-                            <div className="text-center py-16">
-                                <svg className="w-16 h-16 text-gray-200 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                                </svg>
-                                <p className="text-gray-500 text-lg font-medium">Your wishlist is empty</p>
-                                <p className="text-gray-400 text-sm mt-1">Start adding items you love!</p>
-                            </div>
-                        )}
+                        <div className="text-center py-16">
+                            <svg className="w-16 h-16 text-gray-200 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                            </svg>
+                            <p className="text-gray-500 text-lg font-medium">Your wishlist is empty</p>
+                            <p className="text-gray-400 text-sm mt-1">Start adding items you love!</p>
+                        </div>
                     </div>
                 )}
 
-                {/* Orders Tab — Using picsum.photos for fallback (if needed) */}
+                {/* Orders Tab */}
                 {activeTab === "orders" && (
                     <div className="bg-white rounded-2xl shadow-lg p-8">
                         <h2 className="text-2xl font-bold text-gray-900 mb-8">My Orders</h2>
-                        {[
-                            { id: 1001, date: "September 5, 2024", status: "Delivered", items: 2 },
-                            { id: 1000, date: "August 28, 2024", status: "Processing", items: 1 },
-                        ].length > 0 ? (
-                            <ul className="space-y-4">
-                                {[
-                                    { id: 1001, date: "September 5, 2024", status: "Delivered", items: 2 },
-                                    { id: 1000, date: "August 28, 2024", status: "Processing", items: 1 },
-                                ].map((order) => (
-                                    <li
-                                        key={order.id}
-                                        className="border border-gray-200 rounded-xl p-6 hover:shadow-md transition-all cursor-pointer group"
-                                    >
-                                        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                                            <div>
-                                                <p className="font-semibold text-gray-900">Order #{order.id}</p>
-                                                <p className="text-gray-600 text-sm mt-1">{order.date}</p>
-                                                <p className="text-gray-600 text-sm mt-1">{order.items} item{order.items !== 1 ? 's' : ''}</p>
-                                            </div>
-                                            <span className={`inline-flex px-4 py-1.5 rounded-full text-xs font-medium ${order.status === "Delivered"
-                                                    ? "bg-green-100 text-green-800"
-                                                    : "bg-amber-100 text-amber-800"
-                                                }`}>
-                                                {order.status}
-                                            </span>
-                                        </div>
-                                        <div className="mt-4 pt-4 border-t border-gray-100 flex justify-end">
-                                            <button className="text-amber-600 text-sm font-medium hover:text-amber-700 transition">
-                                                View Details →
-                                            </button>
-                                        </div>
-                                    </li>
-                                ))}
-                            </ul>
-                        ) : (
-                            <div className="text-center py-16">
-                                <svg className="w-16 h-16 text-gray-200 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-                                </svg>
-                                <p className="text-gray-500 text-lg font-medium">No orders yet</p>
-                                <p className="text-gray-400 text-sm mt-1">Your purchase history will appear here.</p>
-                            </div>
-                        )}
+                        <div className="text-center py-16">
+                            <svg className="w-16 h-16 text-gray-200 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                            </svg>
+                            <p className="text-gray-500 text-lg font-medium">No orders yet</p>
+                            <p className="text-gray-400 text-sm mt-1">Your purchase history will appear here.</p>
+                        </div>
                     </div>
                 )}
             </div>
@@ -271,8 +251,8 @@ function UserPage() {
                                         id="email"
                                         name="email"
                                         value={userInfo.email}
-                                        onChange={handleChange}
-                                        className="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent transition"
+                                        readOnly
+                                        className="w-full border border-gray-300 rounded-xl px-4 py-3 bg-gray-50 text-gray-500 cursor-not-allowed"
                                     />
                                 </div>
                                 <div>
