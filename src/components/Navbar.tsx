@@ -15,15 +15,14 @@ function Navbar() {
 
     const navClass = "transition-colors duration-200 px-2 py-1 rounded-md"
 
-    // ✅ Fetch user profile on mount AND on route change (after login/signup)
     useEffect(() => {
         const checkAuth = async () => {
             const token = localStorage.getItem("token")
             if (token) {
                 setLoadingProfile(true)
                 try {
-                    const profile = await getProfile()
-                    setUser(profile)
+                    const response = await getProfile() // 👈 Returns { data: { ... } }
+                    setUser(response.data)
                 } catch (error) {
                     console.warn("Failed to load profile:", error)
                     setUser(null)
@@ -38,7 +37,7 @@ function Navbar() {
         }
 
         checkAuth()
-    }, [location]) // 👈 Dependency: Re-run when route changes!
+    }, [location])
 
     const handleLogout = useCallback(async () => {
         try {
