@@ -1,50 +1,9 @@
 import { useEffect, useState } from "react"
 import { Link } from "react-router-dom"
 import { getFeaturedProducts, getRecommendedProducts } from "../services/product"
-
-interface Product {
-    id: number
-    name: string
-    slug: string
-    price: string
-    image: string | null
-    category: { id: number; name: string }
-}
-
-const ProductCard = ({ product }: { product: Product }) => (
-    <Link
-        to={`/product/${product.id}`}
-        className="block group border border-gray-200 rounded-xl p-4 bg-white hover:shadow-lg hover:-translate-y-1 transition-all duration-300 ease-out text-center focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2"
-        aria-label={`View ${product.name}`}
-    >
-        <div className="relative overflow-hidden rounded-lg mb-3 aspect-[4/3] bg-gray-100">
-            <img
-                src={product.image || "https://via.placeholder.com/400x300"}
-                alt={product.name}
-                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                onError={(e) => {
-                    const target = e.target as HTMLImageElement
-                    target.src = "https://via.placeholder.com/400x300"
-                }}
-                loading="lazy"
-            />
-        </div>
-        <h3 className="font-medium text-gray-900 mb-1 line-clamp-2">{product.name}</h3>
-        <p className="text-sm text-gray-500 mb-2">{product.category?.name}</p>
-        <p className="text-amber-600 font-bold text-lg">
-            Rp {parseInt(product.price).toLocaleString("id-ID")}
-        </p>
-    </Link>
-)
-
-const SkeletonCard = () => (
-    <div className="border border-gray-200 rounded-xl p-4 bg-white animate-pulse">
-        <div className="aspect-[4/3] bg-gray-200 rounded-lg mb-3"></div>
-        <div className="h-4 bg-gray-200 rounded w-3/4 mx-auto mb-2"></div>
-        <div className="h-3 bg-gray-200 rounded w-1/2 mx-auto mb-2"></div>
-        <div className="h-4 bg-gray-200 rounded w-1/3 mx-auto"></div>
-    </div>
-)
+import type { Product } from "../components/types"
+import { SkeletonCard } from "../components/SkeletonCard"
+import { ProductCard } from "../components/ProductCard"
 
 function Home() {
     const [featured, setFeatured] = useState<Product[]>([])
