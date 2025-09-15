@@ -2,7 +2,7 @@ import { useState, useEffect } from "react"
 import { getProfile, updateProfile } from "../services/auth"
 
 function UserPage() {
-    const [activeTab, setActiveTab] = useState<"account" | "wishlist" | "orders">("account")
+    const [activeTab, setActiveTab] = useState<"account" | "orders">("account")
     const [userInfo, setUserInfo] = useState({
         fullName: "",
         email: "",
@@ -69,7 +69,7 @@ function UserPage() {
         return (
             <div className="max-w-5xl mx-auto py-12 px-4">
                 <div className="border-b border-gray-200 mb-8 flex space-x-1">
-                    {["account", "wishlist", "orders"].map((tab) => (
+                    {["account", "orders"].map((tab) => (
                         <div key={tab} className="h-8 bg-gray-200 rounded animate-pulse w-24"></div>
                     ))}
                 </div>
@@ -101,7 +101,7 @@ function UserPage() {
         <div className="max-w-5xl mx-auto py-12 px-4">
             {/* Tabs — Polished */}
             <div className="border-b border-gray-200 mb-8 flex space-x-1">
-                {["account", "wishlist", "orders"].map((tab) => (
+                {["account", "orders"].map((tab) => (
                     <button
                         key={tab}
                         onClick={() => setActiveTab(tab as any)}
@@ -112,7 +112,7 @@ function UserPage() {
                         aria-current={activeTab === tab ? "page" : undefined}
                     >
                         {tab === "account" && "Account"}
-                        {tab === "wishlist" && "Wishlist"}
+                        {/* {tab === "wishlist" && "Wishlist"} */}
                         {tab === "orders" && "Orders"}
                         {activeTab === tab && (
                             <span className="absolute -bottom-1 left-0 w-full h-0.5 bg-amber-600 rounded-full"></span>
@@ -184,7 +184,7 @@ function UserPage() {
                 )}
 
                 {/* Wishlist Tab */}
-                {activeTab === "wishlist" && (
+                {/* {activeTab === "wishlist" && (
                     <div className="bg-white rounded-2xl shadow-lg p-8">
                         <h2 className="text-2xl font-bold text-gray-900 mb-8">My Wishlist</h2>
                         <div className="text-center py-16">
@@ -195,7 +195,7 @@ function UserPage() {
                             <p className="text-gray-400 text-sm mt-1">Start adding items you love!</p>
                         </div>
                     </div>
-                )}
+                )} */}
 
                 {/* Orders Tab */}
                 {activeTab === "orders" && (

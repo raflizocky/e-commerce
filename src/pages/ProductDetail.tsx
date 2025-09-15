@@ -1,8 +1,9 @@
-import { Link, useParams } from "react-router-dom"
+import { Link, useParams, useNavigate } from "react-router-dom"
 import { useEffect, useState } from "react"
 
 function ProductDetail() {
     const { id } = useParams<{ id: string }>()
+    const navigate = useNavigate()
     const [quantity, setQuantity] = useState(1)
     const [isLoading, setIsLoading] = useState(true)
 
@@ -32,6 +33,17 @@ function ProductDetail() {
     // Prevent negative quantity
     const handleDecrement = () => setQuantity((q) => Math.max(1, q - 1))
     const handleIncrement = () => setQuantity((q) => q + 1)
+
+    // Handle order button click
+    const handleOrder = () => {
+        const orderData = {
+            product,
+            quantity,
+            totalPrice: product.price * quantity
+        }
+        // Navigate to checkout with order data
+        navigate('/checkout', { state: orderData })
+    }
 
     return (
         <div className="max-w-6xl mx-auto py-12 px-4">
@@ -64,8 +76,8 @@ function ProductDetail() {
                                 key={i}
                                 onClick={() => setMainImage(img)}
                                 className={`flex-shrink-0 w-20 h-20 rounded-xl overflow-hidden border-2 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-amber-500 ${mainImage === img
-                                        ? "border-amber-600 shadow-md scale-105"
-                                        : "border-gray-200 hover:border-gray-300"
+                                    ? "border-amber-600 shadow-md scale-105"
+                                    : "border-gray-200 hover:border-gray-300"
                                     }`}
                                 aria-label={`View thumbnail ${i + 1}`}
                             >
@@ -164,26 +176,17 @@ function ProductDetail() {
                         )}
                     </div>
 
-                    {/* Action Buttons */}
-                    <div className="flex flex-col sm:flex-row gap-4 mb-8">
+                    {/* Order Button */}
+                    <div className="mb-8">
                         <button
+                            onClick={handleOrder}
                             disabled={product.stock <= 0}
-                            className={`px-8 py-4 rounded-xl font-semibold text-white transition-all duration-200 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-500 ${product.stock > 0
-                                    ? "bg-amber-600 hover:bg-amber-700 shadow-md hover:shadow-lg"
-                                    : "bg-gray-300 cursor-not-allowed text-gray-500"
+                            className={`w-full px-8 py-4 rounded-xl font-semibold text-white transition-all duration-200 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-500 ${product.stock > 0
+                                ? "bg-amber-600 hover:bg-amber-700 shadow-md hover:shadow-lg"
+                                : "bg-gray-300 cursor-not-allowed text-gray-500"
                                 }`}
                         >
-                            {product.stock > 0 ? "Add to Cart" : "Out of Stock"}
-                        </button>
-
-                        <button
-                            className="flex items-center justify-center gap-2 px-8 py-4 border border-gray-300 rounded-xl font-medium text-gray-700 hover:bg-gray-50 transition-colors focus:outline-none focus:ring-2 focus:ring-amber-500"
-                            aria-label="Add to wishlist"
-                        >
-                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                            </svg>
-                            Wishlist
+                            {product.stock > 0 ? `Order Now - Rp ${(product.price * quantity).toLocaleString("id-ID")}` : "Out of Stock"}
                         </button>
                     </div>
 
