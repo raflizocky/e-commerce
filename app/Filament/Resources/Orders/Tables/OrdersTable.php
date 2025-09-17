@@ -16,14 +16,15 @@ class OrdersTable
             ->columns([
                 TextColumn::make('customer.email')
                     ->sortable(),
+                TextColumn::make('orderItems.product.name')
+                    ->sortable(),
                 TextColumn::make('total_amount')
                     ->numeric()
                     ->sortable(),
                 TextColumn::make('status'),
                 TextColumn::make('created_at')
                     ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->sortable(),
                 TextColumn::make('updated_at')
                     ->dateTime()
                     ->sortable()
