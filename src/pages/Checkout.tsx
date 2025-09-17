@@ -1,25 +1,27 @@
-import { useState, useEffect } from "react"
-import { useLocation, useNavigate, Link } from "react-router-dom"
+import { useState, useEffect } from "react";
+import { useLocation, useNavigate, Link } from "react-router-dom";
+import { getProfile } from "../services/auth";
+import { createOrder } from "../services/orders"; // ✅ API to create order
 
 interface OrderData {
     product: {
-        id: string
-        name: string
-        price: number
-        description: string
-        category: string
-        stock: number
-        rating: number
-        images: string[]
-    }
-    quantity: number
-    totalPrice: number
+        id: string;
+        name: string;
+        price: number;
+        description: string;
+        category: string;
+        stock: number;
+        rating: number;
+        images: string[];
+    };
+    quantity: number;
+    totalPrice: number;
 }
 
 function Checkout() {
-    const location = useLocation()
-    const navigate = useNavigate()
-    const orderData: OrderData | null = location.state
+    const location = useLocation();
+    const navigate = useNavigate();
+    const orderData: OrderData | null = location.state;
 
     const [formData, setFormData] = useState({
         fullName: "",
@@ -29,18 +31,49 @@ function Checkout() {
         city: "",
         postalCode: "",
         province: "",
-        paymentMethod: "bank_transfer"
-    })
+        paymentMethod: "bank_transfer",
+    });
 
-    const [isProcessing, setIsProcessing] = useState(false)
-    const [errors, setErrors] = useState<Record<string, string>>({})
+    const [isProcessing, setIsProcessing] = useState(false);
+    const [errors, setErrors] = useState<Record<string, string>>({});
+    const [isProfileLoading, setIsProfileLoading] = useState(true);
 
     // Redirect if no order data
     useEffect(() => {
         if (!orderData) {
-            navigate('/')
+            navigate("/");
         }
-    }, [orderData, navigate])
+    }, [orderData, navigate]);
+
+    // Autofill form if user is logged in
+    useEffect(() => {
+        const token = localStorage.getItem("token");
+        if (!token) {
+            setIsProfileLoading(false);
+            return;
+        }
+
+        const fetchAndFillProfile = async () => {
+            try {
+                const response = await getProfile();
+                const profile = response.data;
+
+                setFormData((prev) => ({
+                    ...prev,
+                    fullName: profile.name || prev.fullName,
+                    email: profile.email || prev.email,
+                    phone: profile.phone || prev.phone,
+                    address: profile.address || prev.address,
+                }));
+            } catch (error) {
+                console.warn("Could not fetch profile for autofill:", error);
+            } finally {
+                setIsProfileLoading(false);
+            }
+        };
+
+        fetchAndFillProfile();
+    }, []);
 
     if (!orderData) {
         return (
@@ -52,65 +85,84 @@ function Checkout() {
                     </Link>
                 </div>
             </div>
-        )
+        );
     }
 
-    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
-        const { name, value } = e.target
-        setFormData(prev => ({ ...prev, [name]: value }))
-        // Clear error when user starts typing
-        if (errors[name]) {
-            setErrors(prev => ({ ...prev, [name]: "" }))
-        }
+    if (isProfileLoading) {
+        return (
+            <div className="min-h-screen flex items-center justify-center">
+                <div className="text-center">
+                    <div className="animate-spin w-8 h-8 border-4 border-amber-500 border-t-transparent rounded-full mx-auto"></div>
+                    <p className="mt-4 text-gray-600">Preparing checkout...</p>
+                </div>
+            </div>
+        );
     }
+
+    const handleInputChange = (
+        e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
+    ) => {
+        const { name, value } = e.target;
+        setFormData((prev) => ({ ...prev, [name]: value }));
+        if (errors[name]) {
+            setErrors((prev) => ({ ...prev, [name]: "" }));
+        }
+    };
 
     const validateForm = () => {
-        const newErrors: Record<string, string> = {}
+        const newErrors: Record<string, string> = {};
 
-        if (!formData.fullName.trim()) newErrors.fullName = "Full name is required"
-        if (!formData.email.trim()) newErrors.email = "Email is required"
-        else if (!/\S+@\S+\.\S+/.test(formData.email)) newErrors.email = "Email is invalid"
-        if (!formData.phone.trim()) newErrors.phone = "Phone number is required"
-        if (!formData.address.trim()) newErrors.address = "Address is required"
-        if (!formData.city.trim()) newErrors.city = "City is required"
-        if (!formData.postalCode.trim()) newErrors.postalCode = "Postal code is required"
-        if (!formData.province.trim()) newErrors.province = "Province is required"
+        if (!formData.fullName.trim()) newErrors.fullName = "Full name is required";
+        if (!formData.email.trim()) newErrors.email = "Email is required";
+        else if (!/\S+@\S+\.\S+/.test(formData.email)) newErrors.email = "Email is invalid";
+        if (!formData.phone.trim()) newErrors.phone = "Phone number is required";
+        if (!formData.address.trim()) newErrors.address = "Address is required";
+        if (!formData.city.trim()) newErrors.city = "City is required";
+        if (!formData.postalCode.trim()) newErrors.postalCode = "Postal code is required";
+        if (!formData.province.trim()) newErrors.province = "Province is required";
 
-        setErrors(newErrors)
-        return Object.keys(newErrors).length === 0
-    }
+        setErrors(newErrors);
+        return Object.keys(newErrors).length === 0;
+    };
 
     const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault()
+        e.preventDefault();
 
-        if (!validateForm()) return
+        if (!validateForm()) return;
 
-        setIsProcessing(true)
+        setIsProcessing(true);
 
         try {
-            // Simulate API call
-            await new Promise(resolve => setTimeout(resolve, 2000))
+            // ✅ Prepare payload for Laravel API
+            const orderPayload = {
+                items: [
+                    {
+                        product_id: Number(orderData.product.id), 
+                        quantity: orderData.quantity,
+                    },
+                ],
+            };
 
-            // Navigate to success page with order details
-            navigate('/order-success', {
-                state: {
-                    orderNumber: `ORD-${Date.now()}`,
-                    orderData,
-                    customerData: formData
-                }
-            })
-        } catch (error) {
-            console.error('Order processing failed:', error)
+            // ✅ Call API to create order in database
+            await createOrder(orderPayload);
+
+            // ✅ On success, redirect to account page with Orders tab open
+            navigate('/account', { state: { defaultTab: 'orders' } });
+
+        } catch (error: any) {
+            console.error("Order creation failed:", error);
+            // Show user-friendly error
+            alert(error.response?.data?.message || "Failed to create order. Please try again.");
         } finally {
-            setIsProcessing(false)
+            setIsProcessing(false);
         }
-    }
+    };
 
-    const shippingCost = 15000
-    const taxRate = 0.1
-    const subtotal = orderData.totalPrice
-    const tax = subtotal * taxRate
-    const finalTotal = subtotal + shippingCost + tax
+    const shippingCost = 15000;
+    const taxRate = 0.1;
+    const subtotal = orderData.totalPrice;
+    const tax = subtotal * taxRate;
+    const finalTotal = subtotal + shippingCost + tax;
 
     return (
         <div className="min-h-screen bg-gray-50 py-12">
@@ -139,7 +191,8 @@ function Checkout() {
                                             name="fullName"
                                             value={formData.fullName}
                                             onChange={handleInputChange}
-                                            className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 ${errors.fullName ? 'border-red-300' : 'border-gray-300'}`}
+                                            className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 ${errors.fullName ? "border-red-300" : "border-gray-300"
+                                                }`}
                                             placeholder="Enter your full name"
                                         />
                                         {errors.fullName && <p className="text-red-500 text-sm mt-1">{errors.fullName}</p>}
@@ -155,7 +208,8 @@ function Checkout() {
                                             name="phone"
                                             value={formData.phone}
                                             onChange={handleInputChange}
-                                            className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 ${errors.phone ? 'border-red-300' : 'border-gray-300'}`}
+                                            className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 ${errors.phone ? "border-red-300" : "border-gray-300"
+                                                }`}
                                             placeholder="08123456789"
                                         />
                                         {errors.phone && <p className="text-red-500 text-sm mt-1">{errors.phone}</p>}
@@ -172,7 +226,8 @@ function Checkout() {
                                         name="email"
                                         value={formData.email}
                                         onChange={handleInputChange}
-                                        className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 ${errors.email ? 'border-red-300' : 'border-gray-300'}`}
+                                        className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 ${errors.email ? "border-red-300" : "border-gray-300"
+                                            }`}
                                         placeholder="your@email.com"
                                     />
                                     {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email}</p>}
@@ -188,7 +243,8 @@ function Checkout() {
                                         rows={3}
                                         value={formData.address}
                                         onChange={handleInputChange}
-                                        className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 ${errors.address ? 'border-red-300' : 'border-gray-300'}`}
+                                        className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 ${errors.address ? "border-red-300" : "border-gray-300"
+                                            }`}
                                         placeholder="Street address, apartment, suite, unit, building, floor, etc."
                                     />
                                     {errors.address && <p className="text-red-500 text-sm mt-1">{errors.address}</p>}
@@ -205,7 +261,8 @@ function Checkout() {
                                             name="city"
                                             value={formData.city}
                                             onChange={handleInputChange}
-                                            className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 ${errors.city ? 'border-red-300' : 'border-gray-300'}`}
+                                            className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 ${errors.city ? "border-red-300" : "border-gray-300"
+                                                }`}
                                             placeholder="City"
                                         />
                                         {errors.city && <p className="text-red-500 text-sm mt-1">{errors.city}</p>}
@@ -221,7 +278,8 @@ function Checkout() {
                                             name="province"
                                             value={formData.province}
                                             onChange={handleInputChange}
-                                            className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 ${errors.province ? 'border-red-300' : 'border-gray-300'}`}
+                                            className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 ${errors.province ? "border-red-300" : "border-gray-300"
+                                                }`}
                                             placeholder="Province"
                                         />
                                         {errors.province && <p className="text-red-500 text-sm mt-1">{errors.province}</p>}
@@ -237,7 +295,8 @@ function Checkout() {
                                             name="postalCode"
                                             value={formData.postalCode}
                                             onChange={handleInputChange}
-                                            className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 ${errors.postalCode ? 'border-red-300' : 'border-gray-300'}`}
+                                            className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 ${errors.postalCode ? "border-red-300" : "border-gray-300"
+                                                }`}
                                             placeholder="12345"
                                         />
                                         {errors.postalCode && <p className="text-red-500 text-sm mt-1">{errors.postalCode}</p>}
@@ -251,12 +310,15 @@ function Checkout() {
                             <h2 className="text-xl font-semibold text-gray-900 mb-6">Payment Method</h2>
                             <div className="space-y-3">
                                 {[
-                                    { id: 'bank_transfer', name: 'Bank Transfer', desc: 'Transfer to our bank account' },
-                                    { id: 'e_wallet', name: 'E-Wallet', desc: 'GoPay, OVO, DANA, LinkAja' },
-                                    { id: 'credit_card', name: 'Credit Card', desc: 'Visa, Mastercard, JCB' },
-                                    { id: 'cod', name: 'Cash on Delivery', desc: 'Pay when item arrives' }
+                                    { id: "bank_transfer", name: "Bank Transfer", desc: "Transfer to our bank account" },
+                                    { id: "e_wallet", name: "E-Wallet", desc: "GoPay, OVO, DANA, LinkAja" },
+                                    { id: "credit_card", name: "Credit Card", desc: "Visa, Mastercard, JCB" },
+                                    { id: "cod", name: "Cash on Delivery", desc: "Pay when item arrives" },
                                 ].map((method) => (
-                                    <label key={method.id} className="flex items-start space-x-3 p-4 border border-gray-200 rounded-lg hover:border-amber-300 cursor-pointer transition-colors">
+                                    <label
+                                        key={method.id}
+                                        className="flex items-start space-x-3 p-4 border border-gray-200 rounded-lg hover:border-amber-300 cursor-pointer transition-colors"
+                                    >
                                         <input
                                             type="radio"
                                             name="paymentMethod"
@@ -287,14 +349,12 @@ function Checkout() {
                                     alt={orderData.product.name}
                                     className="w-16 h-16 object-cover rounded-lg"
                                     onError={(e) => {
-                                        const target = e.target as HTMLImageElement
-                                        target.src = "https://via.placeholder.com/64x64?text=Product"
+                                        const target = e.target as HTMLImageElement;
+                                        target.src = "https://via.placeholder.com/64x64?text=Product";
                                     }}
                                 />
                                 <div className="flex-1">
-                                    <h3 className="font-medium text-gray-900 text-sm line-clamp-2">
-                                        {orderData.product.name}
-                                    </h3>
+                                    <h3 className="font-medium text-gray-900 text-sm line-clamp-2">{orderData.product.name}</h3>
                                     <p className="text-sm text-gray-500">Qty: {orderData.quantity}</p>
                                     <p className="text-amber-600 font-semibold text-sm">
                                         Rp {orderData.product.price.toLocaleString("id-ID")}
@@ -319,9 +379,7 @@ function Checkout() {
                                 <div className="border-t border-gray-200 pt-3">
                                     <div className="flex justify-between">
                                         <span className="text-lg font-semibold text-gray-900">Total</span>
-                                        <span className="text-lg font-bold text-amber-600">
-                                            Rp {finalTotal.toLocaleString("id-ID")}
-                                        </span>
+                                        <span className="text-lg font-bold text-amber-600">Rp {finalTotal.toLocaleString("id-ID")}</span>
                                     </div>
                                 </div>
                             </div>
@@ -331,8 +389,8 @@ function Checkout() {
                                 onClick={handleSubmit}
                                 disabled={isProcessing}
                                 className={`w-full py-4 px-6 rounded-xl font-semibold text-white transition-all duration-200 ${isProcessing
-                                        ? "bg-gray-400 cursor-not-allowed"
-                                        : "bg-amber-600 hover:bg-amber-700 transform hover:scale-105 shadow-md hover:shadow-lg"
+                                    ? "bg-gray-400 cursor-not-allowed"
+                                    : "bg-amber-600 hover:bg-amber-700 transform hover:scale-105 shadow-md hover:shadow-lg"
                                     } focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2`}
                             >
                                 {isProcessing ? (
@@ -340,15 +398,18 @@ function Checkout() {
                                         <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
                                         <span>Processing...</span>
                                     </div>
-                                ) : (
-                                    `Place Order - Rp ${finalTotal.toLocaleString("id-ID")}`
-                                )}
+                                ) : `Place Order - Rp ${finalTotal.toLocaleString("id-ID")}`}
                             </button>
 
                             {/* Security Badge */}
                             <div className="flex items-center justify-center mt-4 text-xs text-gray-500">
                                 <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                                    <path
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        strokeWidth="2"
+                                        d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+                                    />
                                 </svg>
                                 Secure SSL encrypted checkout
                             </div>
@@ -357,7 +418,7 @@ function Checkout() {
                 </div>
             </div>
         </div>
-    )
+    );
 }
 
-export default Checkout
+export default Checkout;

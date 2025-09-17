@@ -2,8 +2,10 @@ import { useState, useEffect } from "react";
 import { getProfile, updateProfile } from "../services/auth";
 import { getOrders } from "../services/orders";
 import type { Order } from "../components/types";
+import { useLocation } from "react-router-dom";
 
 function UserPage() {
+    const location = useLocation();
     const [activeTab, setActiveTab] = useState<"account" | "orders">("account");
     const [userInfo, setUserInfo] = useState({
         fullName: "",
@@ -17,6 +19,14 @@ function UserPage() {
     const [isEditing, setIsEditing] = useState(false);
     const [isSaving, setIsSaving] = useState(false);
     const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
+
+    useEffect(() => {
+        if (location.state?.defaultTab === "orders") {
+            setActiveTab("orders");
+            // Optional: Force fetch fresh orders
+            setOrders([]); // Clear cache to trigger fetch
+        }
+    }, [location.state]);
 
     // Fetch profile on mount
     useEffect(() => {
