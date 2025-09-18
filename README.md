@@ -2,6 +2,8 @@
 
 A modern e-commerce frontend built with React, TypeScript, Vite, and Tailwind CSS.
 
+<img width="6725" height="3521" alt="Image" src="https://github.com/user-attachments/assets/b2f1aadc-e313-49be-9aa9-e797e0c19cfc" />
+
 ## Features
 
 - Product listing, detail, and search
