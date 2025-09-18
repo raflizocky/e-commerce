@@ -1,8 +1,12 @@
 # E-Commerce
 
-A modern e-commerce frontend built with React, TypeScript, Vite, and Tailwind CSS.
+A modern e-commerce frontend built with React, TypeScript, Vite, and Tailwind CSS. 
+
+Need custom features? [Contact Me](mailto:work.raflizocky@gmail.com).
 
 <img width="6725" height="3521" alt="Image" src="https://github.com/user-attachments/assets/b2f1aadc-e313-49be-9aa9-e797e0c19cfc" />
+
+<img width="7992" height="4041" alt="Image" src="https://github.com/user-attachments/assets/6de23a00-42a9-42f4-8be9-f02c983ed9bc" />
 
 ## Features
 
