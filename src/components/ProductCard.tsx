@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom"
-import type { Product } from "../components/types"
+import type { Product } from "./types"
 
 export const ProductCard = ({ product }: { product: Product }) => {
     const price = parseFloat(product.price)

@@ -153,8 +153,8 @@ function UserPage() {
                         key={tab}
                         onClick={() => setActiveTab(tab as any)}
                         className={`relative pb-3 px-4 text-sm font-medium transition-colors duration-200 ${activeTab === tab
-                                ? "text-amber-600 border-b-2 border-amber-600"
-                                : "text-gray-500 hover:text-gray-700"
+                            ? "text-amber-600 border-b-2 border-amber-600"
+                            : "text-gray-500 hover:text-gray-700"
                             }`}
                     >
                         {tab === "account" && "Account"}

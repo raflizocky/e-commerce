@@ -1,5 +1,9 @@
 import api from "./axios";
-import type { CreateOrderData, OrderResponse, PaginatedOrderResponse } from "../components/types";
+import type {
+  CreateOrderData,
+  OrderResponse,
+  PaginatedOrderResponse,
+} from "../components/types";
 
 // Get all orders for the authenticated user
 export const getOrders = async (
